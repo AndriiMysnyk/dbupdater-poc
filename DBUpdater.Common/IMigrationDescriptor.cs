@@ -1,6 +1,4 @@
-﻿using DBUpdater.Common.SchemaLibrary;
-
-namespace DBUpdater.Common;
+﻿namespace DBUpdater.Common;
 
 public interface IMigrationDescriptor
 {

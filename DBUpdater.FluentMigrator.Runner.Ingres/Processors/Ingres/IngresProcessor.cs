@@ -1,6 +1,5 @@
 using System.Data;
 using DBUpdater.FluentMigrator.Runner.Ingres;
-using FluentMigrator;
 using FluentMigrator.Expressions;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Runner.Processors;
