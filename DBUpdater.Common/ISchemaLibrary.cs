@@ -4,5 +4,5 @@ namespace DBUpdater.Common;
 
 public interface ISchemaLibrary
 {
-    List<Table> Tables { get; }
+    IEnumerable<Table> Tables { get; }
 }

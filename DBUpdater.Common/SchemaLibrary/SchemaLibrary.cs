@@ -1,8 +1,11 @@
-﻿namespace DBUpdater.Common.SchemaLibrary;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DBUpdater.Common.SchemaLibrary;
 
 public class SchemaLibrary : ISchemaLibrary
 {
-    public SchemaLibrary(List<Table> tables) => Tables = tables;
+    public SchemaLibrary(IEnumerable<Table> tables) => Tables = tables ?? [];
 
-    public List<Table> Tables { get; init; }
+    [NotNull]
+    public IEnumerable<Table> Tables { get; init; }
 }

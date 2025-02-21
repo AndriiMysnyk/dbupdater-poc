@@ -10,9 +10,9 @@ class Program
 {
     #region Input parameters
     private readonly static bool isIngres = false;
-    private readonly static string connectionString = @"Data Source=file:..\Databases\SQLite\Test.db";
+    private readonly static string connectionString = @"Data Source=file:Databases\SQLite\Test.db";
     // The output file of MedicoTools.SchemaLibrary.Tester.exe (fd files data transformed into json)
-    private readonly static string schemaLibraryPath = @"..\Input\lib.json";
+    private readonly static string schemaLibraryPath = @"Input\lib.json";
     // Migration description & version are used for the migration history tracking
     private readonly static string migrationDescription = "First try to create tables";
     private readonly static long migrationVersion = 1;

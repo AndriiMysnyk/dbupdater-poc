@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBUpdater.Migrations", "DBU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBUpdater.Common", "DBUpdater.Common\DBUpdater.Common.csproj", "{53D76913-EE49-43CC-A325-02350BC11258}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input", "Input", "{B05827AC-E088-42D5-9FEF-6B214A5614E1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBUpdater.FluentMigrator.Runner.Ingres", "DBUpdater.FluentMigrator.Runner.Ingres\DBUpdater.FluentMigrator.Runner.Ingres.csproj", "{FC021F1E-0728-4E56-A83A-FBF594A5864D}"
 EndProject
 Global
