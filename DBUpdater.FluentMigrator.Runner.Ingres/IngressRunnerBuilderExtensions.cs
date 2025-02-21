@@ -2,11 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using FluentMigrator;
 using FluentMigrator.Runner;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentMigrator.Runner.Generators;
-using FluentMigrator.Runner.Processors;
-using FluentMigrator.Runner.Initialization;
 
 namespace DBUpdater.FluentMigrator.Runner.Ingres;
 
@@ -22,27 +17,11 @@ public static class IngressRunnerBuilderExtensions
     {
         builder.Services
             .AddScoped<IngresDbFactory>()
-            .AddScoped<IngresProcessor>(sp =>
-            {
-                var factory = sp.GetService<IngresDbFactory>();
-                var logger = sp.GetService<ILogger<IngresProcessor>>();
-                var options = sp.GetService<IOptionsSnapshot<ProcessorOptions>>();
-                var connectionStringAccessor = sp.GetService<IConnectionStringAccessor>();
-                var quoter = new IngresQuoter();
-                return new IngresProcessor(factory, sp.GetService<IngresGenerator>(), logger, options, connectionStringAccessor, sp, quoter);
-            })
-            .AddScoped<IIngresTypeMap>(sp => new IngresTypeMap())
+            .AddScoped<IngresQuoter>()
+            .AddScoped<IngresProcessor>()
             .AddScoped<IMigrationProcessor>(sp => sp.GetRequiredService<IngresProcessor>())
-
-            .AddScoped(
-                sp =>
-                {
-                    var typeMap = sp.GetRequiredService<IIngresTypeMap>();
-                    return new IngresGenerator(
-                        new IngresQuoter(),
-                        typeMap,
-                        new OptionsWrapper<GeneratorOptions>(new GeneratorOptions()));
-                })
+            .AddScoped<IIngresTypeMap>(sp => new IngresTypeMap())
+            .AddScoped<IngresGenerator>()
             .AddScoped<IMigrationGenerator>(sp => sp.GetRequiredService<IngresGenerator>());
 
         return builder;
