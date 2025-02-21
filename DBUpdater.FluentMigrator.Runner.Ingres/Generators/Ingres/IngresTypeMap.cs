@@ -9,5 +9,6 @@ public sealed class IngresTypeMap : TypeMapBase, IIngresTypeMap
     {
         SetTypeMap(DbType.String, "TEXT");
         SetTypeMap(DbType.Byte, "INTEGER");
+        // etc.
     }
 }

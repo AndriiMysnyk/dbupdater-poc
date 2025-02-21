@@ -6,7 +6,7 @@ namespace DBUpdater.Migrations;
 
 [Migration(1)]
 /// <summary>
-/// We need only one <see cref="Migration"/> implementation whilch is completely ruled by <see cref="IMigrationConfig"/> data.
+/// We need only one <see cref="Migration"/> implementation whilch is completely ruled by <see cref="ISchemaLibrary"/> data.
 /// The core idea is to run the same migration with different input data (tables, constraints, etc.) and version info.
 /// </summary>
 public sealed class DynamicMigration : Migration
