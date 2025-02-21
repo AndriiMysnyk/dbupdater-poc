@@ -7,6 +7,11 @@ using DBUpdater.Migrations;
 
 namespace DBUpdater.Console;
 
+/// <summary>
+/// The only reason to override default conventions is to redefine migration version obtaining.
+/// Default behavior is to get version value from <see cref="MigrationAttribute"/>
+/// We need the ability to pass version value from the outside
+/// </summary>
 internal class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
 {
     private static readonly IMigrationRunnerConventions _default
