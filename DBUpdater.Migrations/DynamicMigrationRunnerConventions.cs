@@ -49,9 +49,9 @@ public class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
         return migrationInfo;
     }
 
-    public DynamicMigrationRunnerConventions(IMigrationDescriptor config)
+    public DynamicMigrationRunnerConventions(IMigrationDescriptor descriptor)
     {
-        _descriptor = config;
+        _descriptor = descriptor;
         TypeIsMigration = _default.TypeIsMigration;
         TypeIsVersionTableMetaData = _default.TypeIsVersionTableMetaData;
 #pragma warning disable 612
