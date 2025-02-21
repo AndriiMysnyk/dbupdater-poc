@@ -1,5 +1,6 @@
 ﻿using FluentMigrator;
 using DBUpdater.Common.SchemaLibrary;
+using DBUpdater.Common;
 
 namespace DBUpdater.Migrations;
 
@@ -10,16 +11,20 @@ namespace DBUpdater.Migrations;
 /// </summary>
 public sealed class DynamicMigration : Migration
 {
-    private IMigrationConfig _config;
+    private IMigrationDescriptor _descriptor;
+    private ISchemaLibrary _schemaLibrary;
 
-    public DynamicMigration(IMigrationConfig config)
+    public DynamicMigration(
+        IMigrationDescriptor descriptor,
+        ISchemaLibrary schemaLibrary)
     {
-        _config = config;
+        _descriptor = descriptor;
+        _schemaLibrary = schemaLibrary;
     }
 
     public override void Up()
     {
-        foreach (Table table in _config.Tables)
+        foreach (Table table in _schemaLibrary.Tables)
         {
             var createTableRequest =
                 Create
@@ -38,7 +43,7 @@ public sealed class DynamicMigration : Migration
 
     public override void Down()
     {
-        foreach (Table table in _config.Tables)
+        foreach (Table table in _schemaLibrary.Tables)
         {
             Delete.Table(table.Name);
         }

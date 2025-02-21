@@ -3,16 +3,16 @@ using FluentMigrator;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Infrastructure;
 using System.Reflection;
-using DBUpdater.Migrations;
+using DBUpdater.Common;
 
-namespace DBUpdater.Console;
+namespace DBUpdater.Migrations;
 
 /// <summary>
-/// The only reason to override default conventions is to redefine migration version obtaining.
+/// The only reason to override the default conventions is to redefine migration version obtaining.
 /// Default behavior is to get version value from <see cref="MigrationAttribute"/>
 /// We need the ability to pass version value from the outside
 /// </summary>
-internal class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
+public class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
 {
     private static readonly IMigrationRunnerConventions _default
         = DefaultMigrationRunnerConventions.Instance;
@@ -30,15 +30,15 @@ internal class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
     public Func<Type, bool> TypeHasTags { get; set; }
     public Func<Type, IEnumerable<string>, bool> TypeHasMatchingTags { get; set; }
 
-    private IMigrationConfig _config;
+    private IMigrationDescriptor _descriptor;
 
     private IMigrationInfo GetMigrationInfoForMigrationImpl(IMigration migration)
     {
         var migrationType = migration.GetType();
         var migrationAttribute = migrationType.GetCustomAttribute<MigrationAttribute>();
         var migrationInfo = new MigrationInfo(
-            _config.Version,
-            _config.Description,
+            _descriptor.Version,
+            _descriptor.Description,
             migrationAttribute.TransactionBehavior,
             migrationAttribute.BreakingChange,
             () => migration);
@@ -49,9 +49,9 @@ internal class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
         return migrationInfo;
     }
 
-    public DynamicMigrationRunnerConventions(IMigrationConfig config)
+    public DynamicMigrationRunnerConventions(IMigrationDescriptor config)
     {
-        _config = config;
+        _descriptor = config;
         TypeIsMigration = _default.TypeIsMigration;
         TypeIsVersionTableMetaData = _default.TypeIsVersionTableMetaData;
 #pragma warning disable 612

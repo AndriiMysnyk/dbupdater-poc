@@ -3,7 +3,8 @@ using DBUpdater.Common.SchemaLibrary;
 using DBUpdater.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using DBUpdater.Console;
+using DBUpdater.Common;
+using DBUpdater.Common.Migrations;
 
 class Program
 {
@@ -22,33 +23,41 @@ class Program
         runner.MigrateUp();
     }
 
-    private static MigrationConfig CreateConfig()
+    private static ServiceProvider CreateServices()
+    {
+        IMigrationDescriptor migrationDescriptor = CreateMigrationDescriptor();
+        ISchemaLibrary schemaLibrary = CreateSchemaLibrary();
+
+        return new ServiceCollection()
+            .AddFluentMigratorCore()
+            .AddSingleton(migrationDescriptor)
+            .AddSingleton(schemaLibrary)
+            .ConfigureRunner(rb => rb
+                .AddSQLite()
+                .WithGlobalConnectionString(connectionString)
+                .WithRunnerConventions(new DynamicMigrationRunnerConventions(migrationDescriptor))
+                .ScanIn(typeof(DynamicMigration).Assembly).For.Migrations())
+            .AddLogging(lb => lb.AddFluentMigratorConsole())
+            .BuildServiceProvider(false);
+    }
+
+    private static IMigrationDescriptor CreateMigrationDescriptor()
+    {
+        MigrationDescriptor descriptor = new(
+            migrationVersion,
+            migrationDescription);
+
+        return descriptor;
+    }
+
+    private static ISchemaLibrary CreateSchemaLibrary()
     {
         SchemaLibrary? data =
             JsonConvert.DeserializeObject<SchemaLibrary>(
                 File.ReadAllText(schemaLibraryPath));
+        
+        SchemaLibrary schemaLibrary = new(data!.Tables);
 
-        MigrationConfig config = new(
-            migrationVersion,
-            migrationDescription,
-            data!.Tables);
-
-        return config;
-    }
-
-    private static ServiceProvider CreateServices()
-    {
-        IMigrationConfig config = CreateConfig();
-
-        return new ServiceCollection()
-            .AddFluentMigratorCore()
-            .AddSingleton(config)
-            .ConfigureRunner(rb => rb
-                .AddSQLite()
-                .WithGlobalConnectionString(connectionString)
-                .WithRunnerConventions(new DynamicMigrationRunnerConventions(config))
-                .ScanIn(typeof(DynamicMigration).Assembly).For.Migrations())
-            .AddLogging(lb => lb.AddFluentMigratorConsole())
-            .BuildServiceProvider(false);
+        return schemaLibrary;
     }
 }

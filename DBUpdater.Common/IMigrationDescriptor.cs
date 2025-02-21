@@ -1,12 +1,10 @@
 ﻿using DBUpdater.Common.SchemaLibrary;
 
-namespace DBUpdater.Migrations;
+namespace DBUpdater.Common;
 
-public interface IMigrationConfig
+public interface IMigrationDescriptor
 {
     public long Version { get; }
 
     public string Description { get; }
-
-    List<Table> Tables { get; }
 }

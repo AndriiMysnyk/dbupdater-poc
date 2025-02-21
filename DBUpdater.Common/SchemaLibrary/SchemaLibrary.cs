@@ -1,11 +1,8 @@
 ﻿namespace DBUpdater.Common.SchemaLibrary;
 
-public class SchemaLibrary
+public class SchemaLibrary : ISchemaLibrary
 {
-    public SchemaLibrary(List<Table> tables)
-    {
-        this.Tables = tables;
-    }
+    public SchemaLibrary(List<Table> tables) => Tables = tables;
 
     public List<Table> Tables { get; init; }
 }
