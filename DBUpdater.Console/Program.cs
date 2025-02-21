@@ -12,14 +12,22 @@ using DBUpdater.Console;
 
 class Program
 {
-    static string connectionString = @$"Data Source=file:..\Databases\SQLite\Test.db ";
+    private readonly static string connectionString = @"Data Source=file:..\Databases\SQLite\Test.db";
+    private readonly static string schemaLibraryPath = @"..\Input\lib.json";
+    private readonly static string migrationDescription = "First try to create tables";
+    private readonly static long migrationVersion = 1;
 
     private static MigrationConfig CreateConfig()
     {
-        SchemaLibrary? data = JsonConvert.DeserializeObject<SchemaLibrary>(
-            File.ReadAllText(@"..\Input\lib.json"));
+        SchemaLibrary? data =
+            JsonConvert.DeserializeObject<SchemaLibrary>(
+                File.ReadAllText(schemaLibraryPath));
 
-        MigrationConfig config = new(4, "First try to create tables", data!.Tables);
+        MigrationConfig config = new(
+            migrationVersion,
+            migrationDescription,
+            data!.Tables);
+
         return config;
     }
 
