@@ -1,6 +1,8 @@
 using System.Data;
 using DBUpdater.FluentMigrator.Runner.Ingres;
 using FluentMigrator.Expressions;
+using FluentMigrator.Runner;
+using FluentMigrator.Runner.Helpers;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Runner.Processors;
 using JetBrains.Annotations;
@@ -36,62 +38,137 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
 
         public override void Process(PerformDBOperationExpression expression)
         {
-            throw new NotImplementedException();
+            Logger.LogSay("Performing DB Operation");
+
+            if (Options.PreviewOnly)
+            {
+                return;
+            }
+
+            EnsureConnectionIsOpen();
+
+            expression.Operation?.Invoke(Connection, Transaction);
         }
 
         protected override void Process(string sql)
         {
-            throw new NotImplementedException();
+            Logger.LogSql(sql);
+
+            if (Options.PreviewOnly || string.IsNullOrEmpty(sql))
+            {
+                return;
+            }
+
+            EnsureConnectionIsOpen();
+
+            using (var command = CreateCommand(sql))
+            {
+                command.ExecuteNonQuery();
+            }
         }
 
         public override DataSet ReadTableData(string schemaName, string tableName)
         {
-            throw new NotImplementedException();
+            return Read("select * from {0}", _quoter.QuoteTableName(tableName, schemaName));
         }
 
         public override DataSet Read(string template, params object[] args)
         {
-            throw new NotImplementedException();
+            EnsureConnectionIsOpen();
+
+            using (var command = CreateCommand(string.Format(template, args)))
+            using (var reader = command.ExecuteReader())
+            {
+                return reader.ReadDataSet();
+            }
         }
 
         public override bool Exists(string template, params object[] args)
         {
-            throw new NotImplementedException();
+            EnsureConnectionIsOpen();
+
+            using (var command = CreateCommand(string.Format(template, args.Select(a => ))))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    try
+                    {
+                        return reader.Read();
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         public override void Execute(string template, params object[] args)
         {
-            throw new NotImplementedException();
+            var commandText = string.Format(template, args);
+            Logger.LogSql(commandText);
+
+            if (Options.PreviewOnly)
+            {
+                return;
+            }
+
+            EnsureConnectionIsOpen();
+
+            using (var command = CreateCommand(commandText))
+            {
+                command.ExecuteNonQuery();
+            }
         }
 
         public override bool SchemaExists(string schemaName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iischema WHERE schema_name = '{0}'",
+                FormatHelper.FormatSqlEscape(schemaName));
         }
 
         public override bool TableExists(string schemaName, string tableName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iitables WHERE table_name='{0}' AND table_owner='{1}'",
+                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(schemaName));
         }
 
         public override bool ColumnExists(string schemaName, string tableName, string columnName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iicolumns WHERE table_name='{0}' AND table_owner='{1}' AND column_name='{2}'",
+                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(schemaName),
+                FormatHelper.FormatSqlEscape(columnName));
         }
 
         public override bool ConstraintExists(string schemaName, string tableName, string constraintName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iiconstraints WHERE table_name='{0}' AND table_owner='{1}' AND constraint_name='{2}'",
+                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(schemaName),
+                FormatHelper.FormatSqlEscape(constraintName));
         }
 
         public override bool IndexExists(string schemaName, string tableName, string indexName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iiindexes WHERE base_name='{0}' AND index_owner='{1}' AND index_name='{2}'",
+                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(schemaName),
+                FormatHelper.FormatSqlEscape(indexName));
         }
 
         public override bool SequenceExists(string schemaName, string sequenceName)
         {
-            throw new NotImplementedException();
+            return Exists(
+                "SELECT * FROM iisequence WHERE seq_name='{0}' AND seq_owner='{1}'",
+                FormatHelper.FormatSqlEscape(sequenceName),
+                FormatHelper.FormatSqlEscape(schemaName));
         }
 
         public override bool DefaultValueExists(string schemaName, string tableName, string columnName, object defaultValue)

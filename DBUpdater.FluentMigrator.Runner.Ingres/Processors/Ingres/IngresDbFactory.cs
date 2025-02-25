@@ -4,7 +4,7 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
 {
     public class IngresDbFactory : ReflectionBasedDbFactory
     {
-        private static readonly TestEntry[] _testEntries = [];
+        private static readonly TestEntry[] _testEntries = [ new("actian.client", "Ingres.Client.IngresFactory") ];
 
         [Obsolete]
         public IngresDbFactory()
