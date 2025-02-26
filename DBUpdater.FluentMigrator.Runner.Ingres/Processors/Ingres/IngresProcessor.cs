@@ -87,7 +87,7 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
         {
             EnsureConnectionIsOpen();
 
-            using (var command = CreateCommand(string.Format(template, args.Select(a => ))))
+            using (var command = CreateCommand(string.Format(template, args)))
             {
                 using (var reader = command.ExecuteReader())
                 {
@@ -131,17 +131,17 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
         public override bool TableExists(string schemaName, string tableName)
         {
             return Exists(
-                "SELECT * FROM iitables WHERE table_name='{0}' AND table_owner='{1}'",
-                FormatHelper.FormatSqlEscape(tableName),
-                FormatHelper.FormatSqlEscape(schemaName));
+                "SELECT * FROM iitables WHERE table_name='{0}'",
+                FormatHelper.FormatSqlEscape(tableName));
         }
 
         public override bool ColumnExists(string schemaName, string tableName, string columnName)
         {
             return Exists(
-                "SELECT * FROM iicolumns WHERE table_name='{0}' AND table_owner='{1}' AND column_name='{2}'",
+                //"SELECT * FROM iicolumns WHERE table_name='{0}' AND table_owner='{1}' AND column_name='{2}'",
+                "SELECT * FROM iicolumns WHERE table_name='{0}' AND column_name='{1}'",
                 FormatHelper.FormatSqlEscape(tableName),
-                FormatHelper.FormatSqlEscape(schemaName),
+                //FormatHelper.FormatSqlEscape(schemaName),
                 FormatHelper.FormatSqlEscape(columnName));
         }
 

@@ -13,6 +13,6 @@ internal class IngresColumn : ColumnBase<IIngresTypeMap>
 
     protected override string FormatIdentity(ColumnDefinition column)
     {
-        throw new NotImplementedException();
+        return string.Empty;
     }
 }

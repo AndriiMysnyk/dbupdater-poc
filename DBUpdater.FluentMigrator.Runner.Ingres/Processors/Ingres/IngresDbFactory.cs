@@ -1,20 +1,19 @@
 using FluentMigrator.Runner.Processors;
+using Ingres.Client;
+using System.Data.Common;
 
 namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
 {
-    public class IngresDbFactory : ReflectionBasedDbFactory
+    public class IngresDbFactory : DbFactoryBase
     {
-        private static readonly TestEntry[] _testEntries = [ new("actian.client", "Ingres.Client.IngresFactory") ];
-
-        [Obsolete]
         public IngresDbFactory()
-            : base(_testEntries)
+            : base(IngresFactory.Instance)
         {
         }
 
-        public IngresDbFactory(IServiceProvider serviceProvider)
-            : base(serviceProvider, _testEntries)
+        protected override DbProviderFactory CreateFactory()
         {
+            return IngresFactory.Instance;
         }
     }
 }
