@@ -15,12 +15,16 @@ public sealed class IngresTypeMap : TypeMapBase, IIngresTypeMap
 
     protected override void SetupTypeMaps()
     {
-        SetTypeMap(DbType.String, "text");
-        SetTypeMap(DbType.Byte, "integer");
-        SetTypeMap(DbType.Int64, "integer");
+        SetTypeMap(DbType.Byte, "tinyint");
+        SetTypeMap(DbType.Int16, "smallint");
+        SetTypeMap(DbType.Int32, "integer");
+        SetTypeMap(DbType.Int64, "bigint");
         SetTypeMap(DbType.Date, "date");
+        SetTypeMap(DbType.Time, "time");
         SetTypeMap(DbType.DateTime, "timestamp");
         SetTypeMap(DbType.DateTime2, "timestamp");
-        SetTypeMap(DbType.String, "varchar($size)", MaxVarcharSize);
+        SetTypeMap(DbType.String, "text");
+        SetTypeMap(DbType.String, "nvarchar($size)", MaxVarcharSize);
+        SetTypeMap(DbType.AnsiString, "varchar($size)", MaxVarcharSize);
     }
 }

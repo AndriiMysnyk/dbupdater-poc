@@ -1,6 +1,7 @@
 ﻿using FluentMigrator;
 using DBUpdater.Common.SchemaLibrary;
 using DBUpdater.Common;
+using FluentMigrator.Builders.Create.Table;
 
 namespace DBUpdater.Migrations;
 
@@ -34,10 +35,61 @@ public sealed class DynamicMigration : Migration
 
             foreach (Column column in table.Columns)
             {
-                createTableRequest
-                    .WithColumn(column.Name)
-                    .AsString();                // TODO: Use Database dependent type translator
+                var columnSyntax = createTableRequest
+                    .WithColumn(column.Name);
+
+                ApplyType(column, columnSyntax);
             }
+        }
+    }
+
+    private static void ApplyType(Column column, ICreateTableColumnAsTypeSyntax columnSyntax)
+    {
+        switch (column.Type)
+        {
+            case ColumnType.String:
+                if (column.NumberOfPlaces is null)
+                {
+                    columnSyntax.AsAnsiString();
+                }
+                else
+                {
+                    columnSyntax.AsAnsiString(column.NumberOfPlaces.Value);
+                }
+                break;
+            case ColumnType.NString:
+                if (column.NumberOfPlaces is null)
+                {
+                    columnSyntax.AsString();
+                }
+                else
+                {
+                    columnSyntax.AsString(column.NumberOfPlaces.Value);
+                }
+                break;
+            case ColumnType.Integer:
+                columnSyntax.AsInt64();
+                break;
+            case ColumnType.Date:
+                columnSyntax.AsDate();
+                break;
+            case ColumnType.Timestamp:
+                columnSyntax.AsTime();
+                break;
+            case ColumnType.Floating:
+                break;
+            case ColumnType.Blob:
+                break;
+            case ColumnType.CLob:
+                break;
+            case ColumnType.NCLob:
+                break;
+            case ColumnType.Bit:
+                break;
+            case ColumnType.Seq:
+                break;
+            case ColumnType.Unknown:
+                break;
         }
     }
 
