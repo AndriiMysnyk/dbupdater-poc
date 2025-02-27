@@ -12,14 +12,11 @@ namespace DBUpdater.Migrations;
 /// </summary>
 public sealed class DynamicMigration : Migration
 {
-    private IMigrationDescriptor _descriptor;
     private ISchemaLibrary _schemaLibrary;
 
     public DynamicMigration(
-        IMigrationDescriptor descriptor,
         ISchemaLibrary schemaLibrary)
     {
-        _descriptor = descriptor;
         _schemaLibrary = schemaLibrary;
     }
 
@@ -27,6 +24,11 @@ public sealed class DynamicMigration : Migration
     {
         foreach (Table table in _schemaLibrary.Tables)
         {
+            if (Schema.Schema(table.Schema).Table(table.Name).Exists())
+            {
+                continue;
+            }
+
             var createTableRequest =
                 Create
                     .Table(table.Name)
@@ -42,6 +44,15 @@ public sealed class DynamicMigration : Migration
             }
         }
     }
+
+    public override void Down()
+    {
+        foreach (Table table in _schemaLibrary.Tables)
+        {
+            Delete.Table(table.Name);
+        }
+    }
+
 
     private static void ApplyType(Column column, ICreateTableColumnAsTypeSyntax columnSyntax)
     {
@@ -90,14 +101,6 @@ public sealed class DynamicMigration : Migration
                 break;
             case ColumnType.Unknown:
                 break;
-        }
-    }
-
-    public override void Down()
-    {
-        foreach (Table table in _schemaLibrary.Tables)
-        {
-            Delete.Table(table.Name);
         }
     }
 }

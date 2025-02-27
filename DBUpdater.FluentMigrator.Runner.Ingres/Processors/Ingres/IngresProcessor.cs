@@ -69,7 +69,7 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
 
         public override DataSet ReadTableData(string schemaName, string tableName)
         {
-            return Read("select * from {0}", _quoter.QuoteTableName(tableName, schemaName));
+            return Read("select * from {0}", _quoter.QuoteTableName(tableName.ToLower(), schemaName));
         }
 
         public override DataSet Read(string template, params object[] args)
@@ -132,24 +132,22 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
         {
             return Exists(
                 "SELECT * FROM iitables WHERE table_name='{0}'",
-                FormatHelper.FormatSqlEscape(tableName));
+                FormatHelper.FormatSqlEscape(tableName.ToLower()));
         }
 
         public override bool ColumnExists(string schemaName, string tableName, string columnName)
         {
             return Exists(
-                //"SELECT * FROM iicolumns WHERE table_name='{0}' AND table_owner='{1}' AND column_name='{2}'",
                 "SELECT * FROM iicolumns WHERE table_name='{0}' AND column_name='{1}'",
-                FormatHelper.FormatSqlEscape(tableName),
-                //FormatHelper.FormatSqlEscape(schemaName),
-                FormatHelper.FormatSqlEscape(columnName));
+                FormatHelper.FormatSqlEscape(tableName.ToLower()),
+                FormatHelper.FormatSqlEscape(columnName.ToLower()));
         }
 
         public override bool ConstraintExists(string schemaName, string tableName, string constraintName)
         {
             return Exists(
                 "SELECT * FROM iiconstraints WHERE table_name='{0}' AND table_owner='{1}' AND constraint_name='{2}'",
-                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(tableName.ToLower()),
                 FormatHelper.FormatSqlEscape(schemaName),
                 FormatHelper.FormatSqlEscape(constraintName));
         }
@@ -158,7 +156,7 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
         {
             return Exists(
                 "SELECT * FROM iiindexes WHERE base_name='{0}' AND index_owner='{1}' AND index_name='{2}'",
-                FormatHelper.FormatSqlEscape(tableName),
+                FormatHelper.FormatSqlEscape(tableName.ToLower()),
                 FormatHelper.FormatSqlEscape(schemaName),
                 FormatHelper.FormatSqlEscape(indexName));
         }
@@ -167,7 +165,7 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
         {
             return Exists(
                 "SELECT * FROM iisequence WHERE seq_name='{0}' AND seq_owner='{1}'",
-                FormatHelper.FormatSqlEscape(sequenceName),
+                FormatHelper.FormatSqlEscape(sequenceName.ToLower()),
                 FormatHelper.FormatSqlEscape(schemaName));
         }
 
