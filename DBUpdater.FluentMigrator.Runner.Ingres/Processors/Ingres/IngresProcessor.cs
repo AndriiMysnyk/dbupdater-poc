@@ -1,11 +1,11 @@
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using DBUpdater.FluentMigrator.Runner.Ingres;
 using FluentMigrator.Expressions;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Helpers;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Runner.Processors;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +13,6 @@ namespace DBUpdater.FluentMigrator.Runner.Processors.Ingres
 {
     public class IngresProcessor : GenericProcessorBase
     {
-        [CanBeNull]
         private readonly IServiceProvider _serviceProvider;
         [NotNull]
         private readonly IngresQuoter _quoter;
