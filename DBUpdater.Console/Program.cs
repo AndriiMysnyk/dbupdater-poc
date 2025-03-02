@@ -1,15 +1,15 @@
 ﻿using FluentMigrator.Runner;
-using DBUpdater.Common.SchemaLibrary;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using DBUpdater.Common;
-using DBUpdater.Common.Migrations;
-using DBUpdater.Console;
+using DBUpdater.Migrations.Extensions;
+using DBUpdater.Migrations.Enums;
+using DBUpdater.Migrations.SchemaLibrary;
+using DBUpdater.Migrations;
 
 class Program
 {
     #region Input parameters
-    private readonly static bool isIngres = false;
+    private readonly static bool isIngres = true;
     private readonly static string connectionString = @"Data Source=file:Databases\SQLite\Test.db";
     // The output file of MedicoTools.SchemaLibrary.Tester.exe (fd files data transformed into json)
     private readonly static string schemaLibraryPath = @"Input\lib.json";
@@ -30,31 +30,23 @@ class Program
 
     private static ServiceProvider CreateServices()
     {
-        IMigrationDescriptor migrationDescriptor = CreateMigrationDescriptor();
-        ISchemaLibrary schemaLibrary = CreateSchemaLibrary();
+        IDatabaseUpdateDescriptor descriptor = CreateDescriptor();
+        ISchemaLibrary library = CreateSchemaLibrary();
 
         IServiceCollection services = new ServiceCollection();
         services
-            .AddFluentMigratorCore()
-            .AddSingleton(migrationDescriptor)
-            .AddSingleton(schemaLibrary)
-            .AddLogging(lb => lb.AddFluentMigratorConsole());
-
-        if (isIngres)
-        {
-            services.ConfigureIngresRunner(connectionString, migrationDescriptor);
-        }
-        else
-        {
-            services.ConfigureSQLiteRunner(connectionString, migrationDescriptor);
-        }
+            .AddDatabaseMigrator(
+                isIngres ? DatabaseSystem.Ingres : DatabaseSystem.SqlLite,
+                connectionString,
+                descriptor,
+                library);
             
         return services.BuildServiceProvider(false);
     }
 
-    private static IMigrationDescriptor CreateMigrationDescriptor()
+    private static IDatabaseUpdateDescriptor CreateDescriptor()
     {
-        MigrationDescriptor descriptor = new(
+        DatabaseUpdateDescriptor descriptor = new(
             migrationVersion,
             migrationDescription);
 

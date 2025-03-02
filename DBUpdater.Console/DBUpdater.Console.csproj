@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DBUpdater.FluentMigrator.Runner.Ingres\DBUpdater.FluentMigrator.Runner.Ingres.csproj" />
     <ProjectReference Include="..\DBUpdater.Migrations\DBUpdater.Migrations.csproj" />
   </ItemGroup>
 

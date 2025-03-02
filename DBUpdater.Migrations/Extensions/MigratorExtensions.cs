@@ -1,5 +1,4 @@
-﻿using DBUpdater.Common;
-using DBUpdater.Common.SchemaLibrary;
+﻿using DBUpdater.Migrations.SchemaLibrary;
 using FluentMigrator.Builders.Create.Table;
 
 namespace DBUpdater.Migrations.Extensions;

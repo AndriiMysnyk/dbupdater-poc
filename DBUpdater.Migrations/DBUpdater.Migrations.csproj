@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DBUpdater.Common\DBUpdater.Common.csproj" />
+    <ProjectReference Include="..\DBUpdater.FluentMigrator.Runner.Ingres\DBUpdater.FluentMigrator.Runner.Ingres.csproj" />
   </ItemGroup>
 
 </Project>
