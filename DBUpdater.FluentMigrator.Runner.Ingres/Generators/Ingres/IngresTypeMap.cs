@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using FluentMigrator.Runner.Generators.Base;
 
-namespace DBUpdater.FluentMigrator.Runner.Ingres;
+namespace DBUpdater.FluentMigrator.Runner.Generators.Ingres;
 
 public sealed class IngresTypeMap : TypeMapBase, IIngresTypeMap
 {

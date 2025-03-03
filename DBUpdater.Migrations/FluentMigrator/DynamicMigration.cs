@@ -9,9 +9,14 @@ namespace DBUpdater.Migrations.FluentMigrator;
 /// We need only one <see cref="Migration"/> implementation whilch is completely ruled by <see cref="ISchemaLibrary"/> data.
 /// The core idea is to run the same migration with different input data (tables, constraints, etc.) and version info.
 /// </summary>
-public sealed class DynamicMigration(ISchemaLibrary schemaLibrary) : Migration
+public sealed class DynamicMigration(long version, string description, ISchemaLibrary schemaLibrary)
+    : Migration, IDynamicMigration
 {
     private readonly ISchemaLibrary _schemaLibrary = schemaLibrary;
+
+    public long Version => version;
+
+    public string Description => description;
 
     public override void Up()
     {

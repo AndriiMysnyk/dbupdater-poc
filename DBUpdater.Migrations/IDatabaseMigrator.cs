@@ -1,6 +1,8 @@
-﻿namespace DBUpdater.Migrations;
+﻿using DBUpdater.Migrations.SchemaLibrary;
+
+namespace DBUpdater.Migrations;
 
 public interface IDatabaseMigrator
 {
-    void Up();
+    void Up(long version, string description, ISchemaLibrary library);
 }

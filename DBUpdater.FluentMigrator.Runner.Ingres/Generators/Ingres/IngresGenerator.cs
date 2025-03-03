@@ -3,10 +3,9 @@ using FluentMigrator.Expressions;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Generators;
 using FluentMigrator.Runner.Generators.Generic;
-
 using Microsoft.Extensions.Options;
 
-namespace DBUpdater.FluentMigrator.Runner.Ingres
+namespace DBUpdater.FluentMigrator.Runner.Generators.Ingres
 {
     public class IngresGenerator : GenericGenerator
     {

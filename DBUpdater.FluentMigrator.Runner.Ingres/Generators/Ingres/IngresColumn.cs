@@ -2,7 +2,7 @@
 using FluentMigrator.Runner.Generators;
 using FluentMigrator.Runner.Generators.Base;
 
-namespace DBUpdater.FluentMigrator.Runner.Ingres;
+namespace DBUpdater.FluentMigrator.Runner.Generators.Ingres;
 
 internal class IngresColumn : ColumnBase<IIngresTypeMap>
 {

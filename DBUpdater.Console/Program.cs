@@ -1,5 +1,4 @@
-﻿using FluentMigrator.Runner;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using DBUpdater.Migrations.Extensions;
 using DBUpdater.Migrations.Enums;
@@ -9,13 +8,13 @@ using DBUpdater.Migrations;
 class Program
 {
     #region Input parameters
-    private readonly static bool isIngres = true;
+    private readonly static bool isIngres = false;
     private readonly static string connectionString = @"Data Source=file:Databases\SQLite\Test.db";
     // The output file of MedicoTools.SchemaLibrary.Tester.exe (fd files data transformed into json)
     private readonly static string schemaLibraryPath = @"Input\lib.json";
     // Migration description & version are used for the migration history tracking
-    private readonly static string migrationDescription = "First try to create tables";
-    private readonly static long migrationVersion = 1;
+    private readonly static string updateDescription = "First try to create tables";
+    private readonly static long updateVersion = 1;
     #endregion
 
     static void Main(string[] args)
@@ -23,34 +22,23 @@ class Program
         using ServiceProvider serviceProvider = CreateServices();
         using IServiceScope scope = serviceProvider.CreateScope();
 
-        IMigrationRunner runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+        IDatabaseMigrator migrator =
+            scope.ServiceProvider.GetRequiredService<IDatabaseMigrator>();
 
-        runner.MigrateUp();
+        ISchemaLibrary library = CreateSchemaLibrary();
+
+        migrator.Up(updateVersion, updateDescription, library);
     }
 
     private static ServiceProvider CreateServices()
     {
-        IDatabaseUpdateDescriptor descriptor = CreateDescriptor();
-        ISchemaLibrary library = CreateSchemaLibrary();
-
         IServiceCollection services = new ServiceCollection();
         services
             .AddDatabaseMigrator(
                 isIngres ? DatabaseSystem.Ingres : DatabaseSystem.SqlLite,
-                connectionString,
-                descriptor,
-                library);
+                connectionString);
             
         return services.BuildServiceProvider(false);
-    }
-
-    private static IDatabaseUpdateDescriptor CreateDescriptor()
-    {
-        DatabaseUpdateDescriptor descriptor = new(
-            migrationVersion,
-            migrationDescription);
-
-        return descriptor;
     }
 
     private static ISchemaLibrary CreateSchemaLibrary()

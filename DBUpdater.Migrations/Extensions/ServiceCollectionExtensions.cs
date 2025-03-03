@@ -1,8 +1,8 @@
-﻿using DBUpdater.FluentMigrator.Runner.Ingres;
+﻿using DBUpdater.FluentMigrator.Runner.Ingres.Extensions;
 using DBUpdater.Migrations.Enums;
 using DBUpdater.Migrations.FluentMigrator;
-using DBUpdater.Migrations.SchemaLibrary;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DBUpdater.Migrations.Extensions;
@@ -12,49 +12,58 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDatabaseMigrator(
         this IServiceCollection services,
         DatabaseSystem dbSystem,
-        string connectionString,
-        IDatabaseUpdateDescriptor updateDescriptor,
-        ISchemaLibrary schemaLibrary)
+        string connectionString)
     {
         services
             .AddFluentMigratorCore()
             .AddLogging(lb => lb.AddFluentMigratorConsole());
 
+        DynamicMigrationSource dynamicMigrationSource = new();
         services
-            .AddSingleton(updateDescriptor)
-            .AddSingleton(schemaLibrary);
+            .AddScoped<IDatabaseMigrator, DatabaseMigrator>()
+            .AddScoped<DynamicMigrationSource>()
+            .AddScoped<IDynamicMigrationSource>(sp => sp.GetRequiredService<DynamicMigrationSource>());
 
         return dbSystem switch
         {
-            DatabaseSystem.SqlLite => services.ConfigureSQLiteRunner(connectionString, updateDescriptor),
-            DatabaseSystem.Ingres => services.ConfigureIngresRunner(connectionString, updateDescriptor),
+            DatabaseSystem.SqlLite => services.ConfigureSQLiteRunner(connectionString),
+            DatabaseSystem.Ingres => services.ConfigureIngresRunner(connectionString),
             _ => services,
         };
     }
 
     private static IServiceCollection ConfigureSQLiteRunner(
         this IServiceCollection services,
-        string connectionString,
-        IDatabaseUpdateDescriptor migrationDescriptor)
+        string connectionString)
     {
         return services
             .ConfigureRunner(rb => rb
                 .AddSQLite()
                 .WithGlobalConnectionString(connectionString)
-                .WithRunnerConventions(new DynamicMigrationRunnerConventions(migrationDescriptor))
-                .ScanIn(typeof(DynamicMigration).Assembly).For.Migrations());
+                .WithRunnerConventions(new DynamicMigrationRunnerConventions())
+                .WithDynamicMigrationSource());
     }
 
     private static IServiceCollection ConfigureIngresRunner(
         this IServiceCollection services,
-        string connectionString,
-        IDatabaseUpdateDescriptor migrationDescriptor)
+        string connectionString)
     {
         return services
             .ConfigureRunner(rb => rb
                 .AddIngres()
                 .WithGlobalConnectionString(connectionString)
-                .WithRunnerConventions(new DynamicMigrationRunnerConventions(migrationDescriptor))
-                .ScanIn(typeof(DynamicMigration).Assembly).For.Migrations());
+                .WithRunnerConventions(new DynamicMigrationRunnerConventions())
+                .WithDynamicMigrationSource());
+    }
+
+    private static IMigrationRunnerBuilder WithDynamicMigrationSource(
+        this IMigrationRunnerBuilder builder)
+    {
+        builder.Services
+            .AddScoped<IFilteringMigrationSource>(sp => sp.GetRequiredService<DynamicMigrationSource>())
+#pragma warning disable 618
+            .AddScoped<IMigrationSource>(sp => sp.GetRequiredService<DynamicMigrationSource>());
+#pragma warning restore 618;
+        return builder;
     }
 }

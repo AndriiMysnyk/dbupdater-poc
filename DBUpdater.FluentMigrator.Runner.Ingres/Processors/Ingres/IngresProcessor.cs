@@ -1,6 +1,6 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using DBUpdater.FluentMigrator.Runner.Ingres;
+using DBUpdater.FluentMigrator.Runner.Generators.Ingres;
 using FluentMigrator.Expressions;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Helpers;

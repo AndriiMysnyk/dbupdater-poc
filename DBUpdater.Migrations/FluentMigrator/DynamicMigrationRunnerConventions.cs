@@ -2,7 +2,6 @@
 using FluentMigrator;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Infrastructure;
-using System.Reflection;
 
 namespace DBUpdater.Migrations.FluentMigrator;
 
@@ -29,28 +28,23 @@ public class DynamicMigrationRunnerConventions : IMigrationRunnerConventions
     public Func<Type, bool> TypeHasTags { get; set; }
     public Func<Type, IEnumerable<string>, bool> TypeHasMatchingTags { get; set; }
 
-    private IDatabaseUpdateDescriptor _descriptor;
-
     private IMigrationInfo GetMigrationInfoForMigrationImpl(IMigration migration)
     {
-        var migrationType = migration.GetType();
-        var migrationAttribute = migrationType.GetCustomAttribute<MigrationAttribute>();
-        var migrationInfo = new MigrationInfo(
-            _descriptor.Version,
-            _descriptor.Description,
-            migrationAttribute.TransactionBehavior,
-            migrationAttribute.BreakingChange,
-            () => migration);
+        // TODO: Check for migration type
+        IDynamicMigration dynamicMigration = (IDynamicMigration)migration;
 
-        foreach (var traitAttribute in migrationType.GetCustomAttributes<MigrationTraitAttribute>(true))
-            migrationInfo.AddTrait(traitAttribute.Name, traitAttribute.Value);
+        var migrationInfo = new MigrationInfo(
+            dynamicMigration.Version,
+            dynamicMigration.Description,
+            transactionBehavior: TransactionBehavior.Default,
+            isBreakingChange: false,
+            () => migration);
 
         return migrationInfo;
     }
 
-    public DynamicMigrationRunnerConventions(IDatabaseUpdateDescriptor descriptor)
+    public DynamicMigrationRunnerConventions()
     {
-        _descriptor = descriptor;
         TypeIsMigration = _default.TypeIsMigration;
         TypeIsVersionTableMetaData = _default.TypeIsVersionTableMetaData;
 #pragma warning disable 612
